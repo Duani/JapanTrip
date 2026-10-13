@@ -1,0 +1,2 @@
+-- Deprecated in v4. Use supabase/migrations/0001_trip_auth_and_proposals.sql instead.
+-- Kept only so older notes pointing to supabase/schema.sql do not break.

@@ -1,0 +1,12 @@
+{
+  "name": "Japan Trip Companion",
+  "short_name": "Japan Trip",
+  "description": "Private PWA for the Japan 2026 itinerary.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#111827",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": []
+}
