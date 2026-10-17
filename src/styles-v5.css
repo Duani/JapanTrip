@@ -1,0 +1,12 @@
+/* v5 enhancements — intentionally separate so your styles.css remains untouched. */
+.trip-version-label { margin: 0 22px 8px; color: #1f5d4b; font-size: .9rem; font-weight: 700; }
+.v5-action, .admin-panel .v5-action { display: inline-block; padding: 12px 18px; margin: 6px 0 12px; border: 0; border-radius: 12px; background: #14604a; color: white; font-weight: 800; cursor: pointer; }
+.v5-action.secondary { background: #e3efe9; color: #164a39; border: 1px solid #aacabb; }
+.v5-action:disabled { opacity: .5; cursor: not-allowed; }
+.admin-panel .proposal-card .v5-action { width: 100%; margin-block-start: 12px; }
+
+.v5-preview { margin-top: 12px; padding: 14px; border: 1px solid #c2d9cb; border-radius: 14px; background: #f0f8f2; }
+.v5-before-after { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-block: 12px; }
+.v5-before-after>div { border: 1px solid #dbe6dc; padding: 12px; border-radius: 12px; background: white; }
+.v5-before-after p { margin: 5px 0; font-size: .88rem; }
+@media(max-width:650px) { .v5-before-after { grid-template-columns: 1fr; } }

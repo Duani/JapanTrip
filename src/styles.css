@@ -43,7 +43,7 @@ a:hover { text-decoration: underline; }
 
 .app-header {
   position: static;
-  top: 10px;
+  top: auto;
   z-index: 20;
   padding: 22px;
   margin-block-end: 18px;
@@ -505,29 +505,4 @@ button:hover { transform: translateY(-1px); }
     align-items: flex-start;
     flex-direction: column;
   }
-}
-
-.admin-form button,
-button.admin-submit {
-  background: #17624f;
-  color: #ffffff;
-  border: 0;
-  border-radius: 999px;
-  padding: 14px 22px;
-  font-weight: 900;
-  font-size: 1rem;
-  cursor: pointer;
-  box-shadow: 0 12px 24px rgba(23, 98, 79, 0.18);
-}
-
-.admin-form button:hover,
-button.admin-submit:hover {
-  background: #124c3d;
-}
-
-.admin-form button:disabled,
-button.admin-submit:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  box-shadow: none;
 }

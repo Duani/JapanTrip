@@ -1,15 +1,21 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { tripData } from './data/tripData';
 import type { User } from '@supabase/supabase-js';
 import { isSupabaseConfigured, supabase } from './lib/supabaseClient';
 import { createChangeProposal, listChangeProposals, type ChangeProposalRow } from './lib/proposals';
-import type { BookingItem, DayPlan, OpeningHours, Place, RouteLeg, StationAccess, TicketInfo, TripMemberRole } from './types';
+import type { BookingItem, DayPlan, OpeningHours, Place, RouteLeg, StationAccess, TicketInfo, TripData, TripMemberRole } from './types';
+import { applyTripOperations, getPublishedTrip, publishTrip } from './lib/tripPublishing';
+import { skytreeProposal } from './lib/skytreeProposal';
 import './styles.css';
+import './styles-v5.css';
 
-const placeById = new Map(tripData.places.map((place) => [place.id, place]));
-const hotelById = new Map(tripData.hotels.map((hotel) => [hotel.id, hotel]));
-const routeById = new Map(tripData.routeLegs.map((route) => [route.id, route]));
+const TRIP_ID = 'japan-2026-elad-gal-riva-jacob';
+const TripContext = createContext<TripData | null>(null);
+function useTripData() {
+  const value = useContext(TripContext);
+  if (!value) throw new Error('Trip data has not loaded');
+  return value;
+}
 
 type Tab = 'today' | 'itinerary' | 'bookings' | 'transport' | 'admin';
 
@@ -20,6 +26,10 @@ type Membership = {
 };
 
 function App() {
+  const [tripData, setTripData] = useState<TripData | null>(null);
+  const [tripVersion, setTripVersion] = useState(0);
+  const [tripSyncError, setTripSyncError] = useState<string | null>(null);
+  const [tripLoading, setTripLoading] = useState(isSupabaseConfigured);
   const [selectedDayId, setSelectedDayId] = useState('2026-10-26');
   const [tab, setTab] = useState<Tab>('today');
   const [user, setUser] = useState<User | null>(null);
@@ -29,8 +39,8 @@ function App() {
   const [authMessage, setAuthMessage] = useState<string | null>(null);
 
   const selectedDay = useMemo(
-    () => tripData.days.find((day) => day.id === selectedDayId) ?? tripData.days[0],
-    [selectedDayId]
+    () => tripData?.days.find((day) => day.id === selectedDayId) ?? tripData?.days[0],
+    [tripData, selectedDayId]
   );
 
   useEffect(() => {
@@ -64,7 +74,7 @@ function App() {
     supabase
       .from('trip_members')
       .select('trip_id, display_name, role')
-      .eq('trip_id', tripData.trip.id)
+      .eq('trip_id', TRIP_ID)
       .eq('user_id', user.id)
       .maybeSingle()
       .then(({ data, error }) => {
@@ -77,6 +87,44 @@ function App() {
         setMembershipLoading(false);
       });
   }, [user]);
+
+  useEffect(() => {
+    if (!supabase || !user || !membership) {
+      setTripLoading(false);
+      return;
+    }
+    let live = true;
+    async function refreshTrip() {
+      try {
+        const published = await getPublishedTrip(TRIP_ID);
+        if (!live) return;
+        if (!published) throw new Error('לא נמצאה גרסת מסלול ב־Supabase. יש להריץ את migrations 0002 ו־0003.');
+        setTripData(published.trip);
+        setTripVersion(published.version);
+        setTripSyncError(null);
+      } catch (error) {
+        if (live) setTripSyncError(error instanceof Error ? error.message : 'Sync failed');
+      } finally {
+        if (live) setTripLoading(false);
+      }
+    }
+    setTripLoading(true);
+    void refreshTrip();
+    const timer = window.setInterval(() => { if (!document.hidden) void refreshTrip(); }, 60_000);
+    const onFocus = () => { void refreshTrip(); };
+    window.addEventListener('focus', onFocus);
+    return () => { live = false; window.clearInterval(timer); window.removeEventListener('focus', onFocus); };
+  }, [user?.id, membership?.trip_id]);
+
+  async function refreshAfterPublish() {
+    const published = await getPublishedTrip(TRIP_ID);
+    if (!published) throw new Error('לא נמצאה גרסה מפורסמת');
+    setTripData(published.trip);
+    setTripVersion(published.version);
+    setTripSyncError(null);
+  }
+
+  if (!isSupabaseConfigured) return <main className="app-shell" dir="rtl"><SupabaseSetupBanner /></main>;
 
   if (authLoading) {
     return <LoadingScreen text="בודק התחברות מול Supabase..." />;
@@ -94,15 +142,17 @@ function App() {
     return <NotMemberScreen user={user} message={authMessage} />;
   }
 
-  const effectiveMembership = membership ?? {
-    trip_id: tripData.trip.id,
-    display_name: 'Demo Admin',
-    role: 'admin' as TripMemberRole
-  };
+  if (tripLoading) return <LoadingScreen text="טוען מסלול מעודכן..." />;
+
+  if (!tripData || !selectedDay) return <main className="app-shell" dir="rtl"><section className="panel page-panel"><h2>לא ניתן לטעון את המסלול</h2><p>{tripSyncError ?? 'אין גרסה מפורסמת למסלול. נא להריץ את המיגרציות של v5.'}</p><button onClick={() => window.location.reload()}>נסה שוב</button></section></main>;
+
+  const effectiveMembership = membership!;
 
   return (
+    <TripContext.Provider value={tripData}>
     <main className="app-shell" dir="rtl">
-      {!isSupabaseConfigured && <SupabaseSetupBanner />}
+      {tripSyncError && <p className="admin-status">סנכרון מסלול: {tripSyncError}</p>}
+      <p className="trip-version-label">גרסת מסלול שפורסמה: v{tripVersion}</p>
       <AppHeader activeTab={tab} onChangeTab={setTab} user={user} membership={effectiveMembership} />
 
       {tab === 'today' && (
@@ -115,12 +165,14 @@ function App() {
       {tab === 'itinerary' && <ItineraryOverview onSelectDay={(dayId) => { setSelectedDayId(dayId); setTab('today'); }} />}
       {tab === 'bookings' && <BookingCenter />}
       {tab === 'transport' && <TransportCenter />}
-      {tab === 'admin' && <AdminPanel user={user} membership={effectiveMembership} />}
+      {tab === 'admin' && <AdminPanel user={user} membership={effectiveMembership} tripVersion={tripVersion} onPublished={refreshAfterPublish} />}
     </main>
+    </TripContext.Provider>
   );
 }
 
 function AppHeader({ activeTab, onChangeTab, user, membership }: { activeTab: Tab; onChangeTab: (tab: Tab) => void; user: User | null; membership: Membership }) {
+  const tripData = useTripData();
   const urgentBookings = tripData.bookingItems.filter((item) => item.status === 'to-book' || item.status === 'to-check').length;
   return (
     <header className="app-header">
@@ -144,7 +196,7 @@ function AppHeader({ activeTab, onChangeTab, user, membership }: { activeTab: Ta
         <TabButton tab="itinerary" activeTab={activeTab} onChangeTab={onChangeTab}>כל הימים</TabButton>
         <TabButton tab="bookings" activeTab={activeTab} onChangeTab={onChangeTab}>הזמנות מראש</TabButton>
         <TabButton tab="transport" activeTab={activeTab} onChangeTab={onChangeTab}>רכבות ומעברים</TabButton>
-        <TabButton tab="admin" activeTab={activeTab} onChangeTab={onChangeTab}>Admin</TabButton>
+        {membership.role === 'admin' && <TabButton tab="admin" activeTab={activeTab} onChangeTab={onChangeTab}>Admin</TabButton>}
       </nav>
     </header>
   );
@@ -168,6 +220,7 @@ function TabButton({ tab, activeTab, onChangeTab, children }: { tab: Tab; active
 }
 
 function DayPicker({ selectedDayId, onSelectDay }: { selectedDayId: string; onSelectDay: (dayId: string) => void }) {
+  const tripData = useTripData();
   return (
     <aside className="day-rail panel">
       <h2>בחירת יום</h2>
@@ -190,6 +243,10 @@ function DayPicker({ selectedDayId, onSelectDay }: { selectedDayId: string; onSe
 }
 
 function DayView({ day }: { day: DayPlan }) {
+  const tripData = useTripData();
+  const placeById = useMemo(() => new Map(tripData.places.map((place) => [place.id, place])), [tripData]);
+  const hotelById = useMemo(() => new Map(tripData.hotels.map((hotel) => [hotel.id, hotel])), [tripData]);
+  const routeById = useMemo(() => new Map(tripData.routeLegs.map((route) => [route.id, route])), [tripData]);
   const hotel = day.hotelId ? hotelById.get(day.hotelId) : undefined;
   const routeCount = day.blocks.filter((block) => block.routeLegId).length;
 
@@ -422,6 +479,7 @@ function RouteCard({ route, compact }: { route: RouteLeg; compact?: boolean }) {
 }
 
 function BookingCenter() {
+  const tripData = useTripData();
   const grouped = {
     high: tripData.bookingItems.filter((item) => item.priority === 'high'),
     medium: tripData.bookingItems.filter((item) => item.priority === 'medium'),
@@ -483,6 +541,7 @@ function BookingCard({ item }: { item: BookingItem }) {
 }
 
 function TransportCenter() {
+  const tripData = useTripData();
   return (
     <section className="panel page-panel">
       <p className="eyebrow">Transport</p>
@@ -496,6 +555,7 @@ function TransportCenter() {
 }
 
 function ItineraryOverview({ onSelectDay }: { onSelectDay: (dayId: string) => void }) {
+  const tripData = useTripData();
   return (
     <section className="panel page-panel">
       <p className="eyebrow">Overview</p>
@@ -513,7 +573,7 @@ function ItineraryOverview({ onSelectDay }: { onSelectDay: (dayId: string) => vo
   );
 }
 
-function AdminPanel({ user, membership }: { user: User | null; membership: Membership }) {
+function AdminPanel({ user, membership, tripVersion, onPublished }: { user: User | null; membership: Membership; tripVersion: number; onPublished: () => Promise<void> }) {
   if (!isSupabaseConfigured || !supabase) {
     return (
       <section className="panel page-panel admin-panel">
@@ -536,24 +596,21 @@ VITE_SUPABASE_ANON_KEY=PASTE_LOCAL_ANON_KEY_HERE`}</pre>
     );
   }
 
-  return <AdminProposalConsole user={user} membership={membership} />;
+  return <AdminProposalConsole user={user} membership={membership} tripVersion={tripVersion} onPublished={onPublished} />;
 }
 
-function AdminProposalConsole({ user, membership }: { user: User | null; membership: Membership }) {
-  const [title, setTitle] = useState('בדיקה: הצעת שינוי מהצ׳אט');
-  const [summary, setSummary] = useState('נוצר ידנית מתוך מסך Admin כדי לבדוק שה-POST ל-Supabase עובד.');
+function AdminProposalConsole({ user, membership, tripVersion, onPublished }: { user: User | null; membership: Membership; tripVersion: number; onPublished: () => Promise<void> }) {
+  const tripData = useTripData();
+  const [title, setTitle] = useState('26.10: Tokyo Skytree במקום Shibuya Sky');
+  const [summary, setSummary] = useState('ללחוץ על טען הצעת Skytree ואז לשמור הצעה.');
   const [score, setScore] = useState(88);
   const [recommendation, setRecommendation] = useState('accept_with_changes');
-  const [operationsJson, setOperationsJson] = useState(JSON.stringify([
-    {
-      op: 'update_booking_item',
-      id: 'kosher-wagyu',
-      patch: { status: 'to-check' }
-    }
-  ], null, 2));
+  const [operationsJson, setOperationsJson] = useState('[]');
   const [proposals, setProposals] = useState<ChangeProposalRow[]>([]);
   const [status, setStatus] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [previewId, setPreviewId] = useState<string | null>(null);
+  const [previewError, setPreviewError] = useState<string | null>(null);
 
   async function refresh() {
     try {
@@ -575,10 +632,11 @@ function AdminProposalConsole({ user, membership }: { user: User | null; members
 
     try {
       const operations = JSON.parse(operationsJson);
-      if (!Array.isArray(operations)) {
-        throw new Error('operations חייב להיות מערך JSON');
+      if (!Array.isArray(operations) || operations.length === 0) {
+        throw new Error('יש לטעון/להכניס מערך פעולות שאינו ריק');
       }
 
+      applyTripOperations(tripData, operations); // Validate operation structure before saving.
       await createChangeProposal({
         tripId: tripData.trip.id,
         title,
@@ -601,7 +659,7 @@ function AdminProposalConsole({ user, membership }: { user: User | null; members
         operations
       });
 
-      setStatus('נשמר בהצלחה ל-Supabase. עכשיו Viewer אמור לראות רק את האתר, ו-Admin רואה את הרשימה כאן.');
+      setStatus('הצעת שינוי נשמרה. היא עדיין לא פורסמה למשפחה — לחץ על פרסום הצעה ברשימה.');
       await refresh();
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Failed to create proposal');
@@ -610,11 +668,38 @@ function AdminProposalConsole({ user, membership }: { user: User | null; members
     }
   }
 
+  function loadSkytreePreset() {
+    const operations = skytreeProposal(tripData);
+    setTitle('26.10: החלפת Shibuya Sky ב־Tokyo Skytree בשעה 17:00');
+    setSummary('מקדש מייג׳י, הרג׳וקו, Age.3, שיבויה וקו Hanzomon ל־Tokyo Skytree. 4 כרטיסים הוזמנו לשעה 17:00.');
+    setScore(93);
+    setRecommendation('accept');
+    setOperationsJson(JSON.stringify(operations, null, 2));
+    setStatus('הצעת Skytree נטענה. לחץ שמירת הצעה ואחר כך פרסום — לא נשלח עדיין.');
+  }
+
+  async function publishProposal(proposal: ChangeProposalRow) {
+    if (!window.confirm(`לפרסם את ההצעה "${proposal.title}" לכל בני המשפחה? ודאו שצפיתם בהבדלים קודם. לא ניתן לשחזר בקליק אחד.`)) return;
+    setIsSaving(true);
+    try {
+      const updated = applyTripOperations(tripData, proposal.operations);
+      await publishTrip(tripData.trip.id, updated, tripVersion, proposal.id);
+      await onPublished();
+      await refresh();
+      setPreviewId(null);
+      setStatus(`ההצעה פורסמה. הגרסה הבאה זמינה לכולם ברענון האתר.`);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'שגיאה בהחלת ההצעה');
+    } finally { setIsSaving(false); }
+  }
+
   return (
     <section className="panel page-panel admin-panel">
       <p className="eyebrow">Admin workflow</p>
       <h2>יצירת Change Proposal</h2>
       <p className="summary">מחובר כ-{membership.display_name} ({membership.role}) · {user?.email}</p>
+      <p className="trip-version-label">גרסה פעילה: {tripVersion ? `v${tripVersion}` : 'אין גרסה מפורסמת'}</p>
+      <button className="v5-action secondary" type="button" onClick={loadSkytreePreset}>טען הצעת Skytree ל־26.10</button>
 
       <form className="admin-form" onSubmit={submitProposal}>
         <label>
@@ -662,11 +747,52 @@ function AdminProposalConsole({ user, membership }: { user: User | null; members
             </div>
             <span>{proposal.score ?? '—'}/100</span>
             <small dir="ltr">{proposal.status}</small>
+            {proposal.status === 'draft' || proposal.status === 'approved' ? (
+              <>
+                <button className="v5-action secondary" disabled={isSaving} onClick={() => {
+                  try { applyTripOperations(tripData, proposal.operations); setPreviewError(null); setPreviewId(previewId === proposal.id ? null : proposal.id); }
+                  catch (error) { setPreviewError(error instanceof Error ? error.message : 'הצעה לא תקינה'); setPreviewId(proposal.id); }
+                }}>הצג תצוגה מקדימה</button>
+                {previewId === proposal.id && (
+                  <div className="v5-preview">
+                    {previewError ? <p role="alert">{previewError}</p> : <>
+                      <strong>שינויים מוצעים (טרם פורסמו)</strong>
+                      <ProposalPreview trip={tripData} operations={proposal.operations} />
+                      <button className="v5-action" disabled={isSaving} onClick={() => publishProposal(proposal)}>אני מאשר — פרסם למשפחה</button>
+                    </>}
+                  </div>
+                )}
+              </>
+            ) : null}
           </article>
         ))}
       </section>
     </section>
   );
+}
+
+function ProposalPreview({ trip, operations }: { trip: TripData; operations: unknown[] }) {
+  const updated = applyTripOperations(trip, operations);
+  const changedDays = trip.days.filter(day => JSON.stringify(day) !== JSON.stringify(updated.days.find(d => d.id === day.id)));
+  const changedBookings = updated.bookingItems.filter(item => JSON.stringify(item) !== JSON.stringify(trip.bookingItems.find(b => b.id === item.id)));
+  const changedRoutes = updated.routeLegs.filter(item => JSON.stringify(item) !== JSON.stringify(trip.routeLegs.find(r => r.id === item.id)));
+  const changedPlaces = updated.places.filter(item => JSON.stringify(item) !== JSON.stringify(trip.places.find(p => p.id === item.id)));
+  return <>
+    {changedDays.map(before => {
+      const after = updated.days.find(d => d.id === before.id)!;
+      return <div key={before.id}>
+        <h4>{before.date} — {after.title}</h4>
+        <div className="v5-before-after">
+          <div><b>לפני</b>{before.blocks.map(block => <p key={block.id}>{block.startTime ?? '—'} · {block.title}</p>)}</div>
+          <div><b>אחרי</b>{after.blocks.map(block => <p key={block.id}>{block.startTime ?? '—'} · {block.title}</p>)}</div>
+        </div>
+      </div>;
+    })}
+    {!!changedBookings.length && <div><b>הזמנות שמתעדכנות</b>{changedBookings.map(item => <p key={item.id}>{item.title}: {item.status}</p>)}</div>}
+    {!!changedRoutes.length && <p>קווי תחבורה שנוספו/עודכנו: {changedRoutes.map(item => item.title).join(' · ')}</p>}
+    {!!changedPlaces.length && <p>מקומות שנוספו/עודכנו: {changedPlaces.map(item => item.name).join(' · ')}</p>}
+    {!changedDays.length && !changedBookings.length && !changedRoutes.length && !changedPlaces.length && <p>לא זוהו הבדלים. אין צורך לפרסם.</p>}
+  </>;
 }
 
 function LoadingScreen({ text }: { text: string }) {

@@ -4,7 +4,6 @@ dist
 .env.local
 .DS_Store
 *.tsbuildinfo
-.env.production
-
 supabase/.temp/
 supabase/.branches/
+.env.production
