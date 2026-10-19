@@ -10,7 +10,8 @@
     "supabase:init": "supabase init",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
-    "supabase:reset": "supabase db reset"
+    "supabase:reset": "supabase db reset",
+    "images:fetch": "node scripts/fetch-commons-photos.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "latest",

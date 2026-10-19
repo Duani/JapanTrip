@@ -1,0 +1,74 @@
+/* v6 travel navigation + mobile-first fixes; preserves v5 public trip publication. */
+:root { --paper: #fbfaf6; --forest: #155c4b; --soft-sage: #e7f1ec; }
+.hotel-address-card { border: 1px solid #d1dfd7; border-radius: 22px; background: var(--paper); padding: 18px; margin-block: 16px; box-shadow: 0 7px 24px rgba(25, 52, 43, .05); }
+.hotel-address-card h3 { margin: 0; font-size: clamp(18px,2.5vw,23px); }
+.hotel-address-card .japanese-name { margin: 7px 0; color: #43665d; overflow-wrap: anywhere; }
+.hotel-address-grid { display: grid; gap: 10px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-block: 12px; }
+.hotel-address-grid section { min-width: 0; padding: 14px; border-radius: 15px; background: #f2f7f4; border: 1px solid #dce8e0; }
+.field-label { display: block; font-size: 12px; color: #526e64; font-weight: 800; }
+.large-japanese { font-size: 17px; line-height: 1.5; color: #163f36; font-weight: 700; overflow-wrap: anywhere; }
+.hotel-english { line-height: 1.55; overflow-wrap: anywhere; }
+.copy-pill { background: #fff; color: #194e3f; border: 1px solid #bdd3c9; padding: 8px 13px; font-size: 13px; }
+.copy-pill:hover { background: #dff0e8; }
+.travel-link { padding: 9px 12px; color: #155c4b; background: #e1f1e9; border-radius: 12px; white-space: nowrap; }
+.hotel-reference { margin-bottom: 0; }
+.hotel-address-card.compact { padding: 14px; }
+.hotel-address-card.compact .hotel-address-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.hotel-address-card.compact .hotel-address-grid section:last-child { grid-column: 1 / -1; }
+.station-ja { font-size: 18px; font-weight: 900; color: #214f42; letter-spacing: .03em; margin-block: 3px; }
+.route-stations-ja { display: flex; gap: 8px; flex-wrap: wrap; margin-block: 12px; }
+.station-tag { background: #edf5f0; border: 1px solid #cfdfd5; padding: 5px 9px; border-radius: 11px; display: flex; flex-direction: column; line-height: 1.3; }
+.station-tag b { font-size: 16px; font-weight: 850; }
+.station-tag small { color: #47645a; font-size: 11px; }
+.place-photo { max-height: 350px; }
+.place-photo img { width: 100%; height: 230px; object-fit: cover; border-radius: 15px; }
+.hotels-list { display: grid; gap: 14px; }
+.tab-button:focus-visible, .day-button:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid #eaa647; outline-offset: 2px; }
+@media (max-width: 760px) {
+  html { -webkit-text-size-adjust: 100%; }
+  .app-shell { padding: 8px 10px 108px; overflow-x: clip; }
+  .app-header { padding: 14px; border-radius: 20px; gap: 12px; }
+  .hero-copy h1 { font-size: 34px; line-height: 1.1; }
+  .hero-status-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .metric { padding: 8px; border-radius: 12px; min-width: 0; }
+  .metric strong { font-size: 12px; overflow-wrap: anywhere; }
+  .metric span { font-size: 10px; }
+  .auth-badge { margin: 0; flex-direction: row; align-items: center; padding: 9px; min-width: 0; }
+  .auth-badge small { font-size: 11px; max-width: 190px; overflow-wrap: anywhere; }
+  .auth-badge button { padding: 7px 10px; }
+  /* Fixed mobile navigation, independent of the scrolling header. */
+  .top-tabs { position: fixed; bottom: 0; inset-inline: 0; z-index: 60; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 5px; padding: 7px 8px calc(7px + env(safe-area-inset-bottom)); background: rgba(254,252,247,.97); border-top: 1px solid #d9e2db; box-shadow: 0 -8px 30px rgba(25,40,33,.10); overflow: visible; }
+  .tab-button { flex: initial; padding: 9px 2px; min-width: 0; border-radius: 11px; font-size: 11px; line-height: 1.2; white-space: normal; }
+  .two-column-shell { display: flex; flex-direction: column; gap: 8px; }
+  .day-rail { position: static; width: 100%; margin: 0; padding: 10px; }
+  .day-rail h2 { font-size: 17px; margin: 0 0 6px; }
+  .day-rail .muted { display: none; }
+  .day-button-list { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding: 2px 0 8px; -webkit-overflow-scrolling: touch; }
+  .day-button { flex: 0 0 145px; min-height: 76px; scroll-snap-align: start; text-align: start; padding: 10px; }
+  .day-button strong { font-size: 12px; line-height: 1.25; }
+  .day-button small, .day-button span { font-size: 11px; }
+  .day-main { width: 100%; min-width: 0; }
+  .panel { padding: 12px; }
+  .timeline { gap: 14px; }
+  .timeline-item { display: block; border-top: 1px solid #e2e8e3; padding-top: 11px; }
+  .time-column { text-align: right; font-size: 19px; padding: 0 0 5px; }
+  .timeline-content { border: 0; padding: 0; min-width: 0; }
+  .block-title-row { gap: 7px; }
+  .block-title-row h3 { font-size: 19px; }
+  .hotel-address-grid, .hotel-address-card.compact .hotel-address-grid { grid-template-columns: 1fr; }
+  .hotel-address-card.compact .hotel-address-grid section:last-child { grid-column: auto; }
+  .hotel-address-card .section-title-row { gap: 8px; }
+  .hotel-address-card .travel-link { align-self: flex-start; }
+  .route-card, .place-card { padding: 12px; min-width: 0; }
+  .route-steps li { overflow-wrap: anywhere; }
+  .place-photo img { height: 210px; }
+  .v5-before-after { grid-template-columns: 1fr; }
+  .route-stations-ja { gap: 6px; }
+  .station-tag { flex: 1 1 95px; }
+  input, textarea, select { max-width: 100%; min-width: 0; }
+}
+@media (max-width: 380px) {
+  .hero-copy h1 { font-size: 30px; }
+  .tab-button { font-size: 10px; padding: 8px 1px; }
+  .day-button { flex-basis: 132px; }
+}

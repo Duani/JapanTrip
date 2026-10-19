@@ -6,8 +6,10 @@ import { createChangeProposal, listChangeProposals, type ChangeProposalRow } fro
 import type { BookingItem, DayPlan, OpeningHours, Place, RouteLeg, StationAccess, TicketInfo, TripData, TripMemberRole } from './types';
 import { applyTripOperations, getPublishedTrip, publishTrip } from './lib/tripPublishing';
 import { skytreeProposal } from './lib/skytreeProposal';
+import { hotelAddresses, findStationNames, localPhotoByPlaceId } from './lib/travelEssentials';
 import './styles.css';
 import './styles-v5.css';
+import './styles-v6.css';
 
 const TRIP_ID = 'japan-2026-elad-gal-riva-jacob';
 const TripContext = createContext<TripData | null>(null);
@@ -17,7 +19,7 @@ function useTripData() {
   return value;
 }
 
-type Tab = 'today' | 'itinerary' | 'bookings' | 'transport' | 'admin';
+type Tab = 'today' | 'itinerary' | 'bookings' | 'transport' | 'hotels' | 'admin';
 
 type Membership = {
   trip_id: string;
@@ -165,6 +167,7 @@ function App() {
       {tab === 'itinerary' && <ItineraryOverview onSelectDay={(dayId) => { setSelectedDayId(dayId); setTab('today'); }} />}
       {tab === 'bookings' && <BookingCenter />}
       {tab === 'transport' && <TransportCenter />}
+      {tab === 'hotels' && <HotelsCenter />}
       {tab === 'admin' && <AdminPanel user={user} membership={effectiveMembership} tripVersion={tripVersion} onPublished={refreshAfterPublish} />}
     </main>
     </TripContext.Provider>
@@ -196,6 +199,7 @@ function AppHeader({ activeTab, onChangeTab, user, membership }: { activeTab: Ta
         <TabButton tab="itinerary" activeTab={activeTab} onChangeTab={onChangeTab}>כל הימים</TabButton>
         <TabButton tab="bookings" activeTab={activeTab} onChangeTab={onChangeTab}>הזמנות מראש</TabButton>
         <TabButton tab="transport" activeTab={activeTab} onChangeTab={onChangeTab}>רכבות ומעברים</TabButton>
+        <TabButton tab="hotels" activeTab={activeTab} onChangeTab={onChangeTab}>המלונות</TabButton>
         {membership.role === 'admin' && <TabButton tab="admin" activeTab={activeTab} onChangeTab={onChangeTab}>Admin</TabButton>}
       </nav>
     </header>
@@ -267,6 +271,7 @@ function DayView({ day }: { day: DayPlan }) {
         <MetaPill label="מצב" value={moodLabel(day.mood)} />
       </div>
 
+      {hotel && <HotelAddressCard hotel={hotel} compact />}
       {day.guideDay && <GuideBox day={day} />}
 
       <div className="timeline">
@@ -336,7 +341,7 @@ function PlaceCard({ place }: { place: Place }) {
         <span className="category-chip" dir="ltr">{place.category}</span>
       </header>
 
-      <PlaceImageBlock imageUrl={image?.url} caption={image?.caption ?? image?.alt ?? `תמונת זיהוי עבור ${place.nameHe}`} />
+      <PlaceImageBlock imageUrl={localPhotoByPlaceId[place.id] ?? image?.url} caption={image?.caption ?? image?.alt ?? `תמונת זיהוי עבור ${place.nameHe}`} />
       <p className="place-description" dir="auto">{place.shortDescription}</p>
 
       <div className="quick-info-grid">
@@ -373,10 +378,11 @@ function PlaceCard({ place }: { place: Place }) {
 }
 
 function PlaceImageBlock({ imageUrl, caption }: { imageUrl?: string; caption: string }) {
-  if (imageUrl) {
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+  if (imageUrl && failedUrl !== imageUrl) {
     return (
       <figure className="place-photo">
-        <img src={imageUrl} alt={caption} loading="lazy" />
+        <img src={imageUrl} alt={caption} loading="lazy" onError={() => setFailedUrl(imageUrl)} />
         <figcaption>{caption}</figcaption>
       </figure>
     );
@@ -385,7 +391,7 @@ function PlaceImageBlock({ imageUrl, caption }: { imageUrl?: string; caption: st
     <figure className="place-photo placeholder-photo">
       <div aria-hidden="true">📷</div>
       <figcaption>{caption}</figcaption>
-      <small>להוסיף תמונה שלכם/צילום מסך מורשה דרך Admin.</small>
+      <small>תמונת זיהוי מקומית עדיין לא הותקנה. אפשר להוריד את החבילה עם npm run images:fetch.</small>
     </figure>
   );
 }
@@ -405,6 +411,7 @@ function StationAccessList({ items }: { items: StationAccess[] }) {
       {items.map((item) => (
         <li key={`${item.station}-${item.exit ?? ''}`}>
           <strong dir="ltr">{item.station}</strong>
+          {(item.stationJa || findStationNames(item.station)[0]?.ja) && <div className="station-ja" lang="ja" dir="ltr">{item.stationJa || findStationNames(item.station)[0]?.ja}</div>}
           {item.exit && <> · יציאה: <span dir="ltr">{item.exit}</span></>}
           {typeof item.walkMinutes === 'number' && <> · {item.walkMinutes} דק׳ הליכה</>}
           {item.lines?.length ? <div className="muted" dir="ltr">{item.lines.join(' · ')}</div> : null}
@@ -447,6 +454,7 @@ function RouteCard({ route, compact }: { route: RouteLeg; compact?: boolean }) {
         </div>
         <span className={`route-status ${route.adminStatus}`}>{routeStatusLabel(route.adminStatus)}</span>
       </div>
+      <div className="route-stations-ja" aria-label="שמות תחנות ביפנית">{findStationNames(`${route.fromLabel} ${route.toLabel} ${route.steps.map((step) => `${step.from} ${step.to}`).join(' ')}`).slice(0, 6).map((station) => <span key={station.ja} className="station-tag"><b lang="ja" dir="ltr">{station.ja}</b><small dir="ltr">{station.en}</small></span>)}</div>
       <div className="route-metrics">
         <span>{route.estimatedMinutes} דק׳</span>
         <span>באפר {route.bufferMinutes} דק׳</span>
@@ -476,6 +484,46 @@ function RouteCard({ route, compact }: { route: RouteLeg; compact?: boolean }) {
       <a href={route.googleMapsDirectionsUrl} target="_blank" rel="noreferrer">פתח ניווט חי</a>
     </article>
   );
+}
+
+function CopyButton({ value, label }: { value: string; label: string }) {
+  const [copied, setCopied] = useState(false);
+  return <button type="button" className="copy-pill" onClick={async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+    } catch {
+      window.prompt('בחרו והעתיקו את הטקסט:', value);
+    }
+  }}>{copied ? 'הועתק ✓' : label}</button>;
+}
+
+function HotelAddressCard({ hotel, compact = false }: { hotel: TripData['hotels'][number]; compact?: boolean }) {
+  const detail = hotelAddresses[hotel.id];
+  if (!detail) return null;
+  return (
+    <article className={compact ? 'hotel-address-card compact' : 'hotel-address-card'}>
+      <div className="section-title-row">
+        <div>
+          <p className="eyebrow">לינה · {hotel.checkInDate} – {hotel.checkOutDate}</p>
+          <h3>{hotel.name}</h3>
+          <p className="japanese-name" lang="ja" dir="ltr">{detail.nameJa}</p>
+        </div>
+        <a className="travel-link" href={hotel.googleMapsUrl} target="_blank" rel="noreferrer">נווט למלון ↗</a>
+      </div>
+      <div className="hotel-address-grid">
+        <section><span className="field-label">הצג לנהג / כתובת ביפנית</span><p className="large-japanese" lang="ja" dir="ltr">{detail.ja}</p><CopyButton value={detail.ja} label="העתק יפנית" /></section>
+        <section><span className="field-label">English address</span><p dir="ltr" className="hotel-english">{detail.en}</p><CopyButton value={detail.en} label="Copy address" /></section>
+        <section><span className="field-label">תחנה / יציאה</span><p className="large-japanese" lang="ja" dir="ltr">{detail.stationJa}</p><p dir="ltr">{detail.stationEn} · {detail.exit}</p><CopyButton value={detail.taxiHintJa} label="העתק בקשה למונית" /></section>
+      </div>
+      {!compact && <p className="hotel-reference"><a href={detail.source} target="_blank" rel="noreferrer">כתובת והגעה באתר הרשמי ↗</a></p>}
+    </article>
+  );
+}
+
+function HotelsCenter() {
+  const trip = useTripData();
+  return <section className="panel page-panel"><p className="eyebrow">Navigation essentials</p><h2>המלונות שלנו</h2><p className="summary">הצג לנהג מונית את הכתובת ביפנית, או העתק כתובת באנגלית לניווט. הכתובות אינן כוללות פרטי הזמנה.</p><div className="hotels-list">{trip.hotels.map((hotel) => <HotelAddressCard key={hotel.id} hotel={hotel} />)}</div></section>;
 }
 
 function BookingCenter() {
@@ -815,28 +863,13 @@ function LoginScreen({ message }: { message: string | null }) {
     if (error) setLocalMessage(error.message);
   }
 
-  async function sendMagicLink() {
-    if (!supabase) return;
-    if (!email) {
-      setLocalMessage('צריך להזין מייל קודם.');
-      return;
-    }
-    setLoading(true);
-    setLocalMessage(null);
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: window.location.origin }
-    });
-    setLoading(false);
-    setLocalMessage(error ? error.message : 'נשלח קישור כניסה למייל. בלוקאלי בודקים אותו דרך Mailpit/Inbucket של Supabase.');
-  }
 
   return (
     <main className="app-shell auth-shell" dir="rtl">
       <section className="panel page-panel login-card">
         <p className="eyebrow" dir="ltr">Japan Trip Companion</p>
         <h1>כניסה לאתר הטיול</h1>
-        <p className="summary">בשלב הבדיקה ניצור משתמשים ב-Supabase: Admin, Editor ו-Viewers. כל אחד יראה את האתר לפי ההרשאה שלו.</p>
+        <p className="summary">כניסה באמצעות המייל והסיסמה שהוגדרו לכם. הרשאות Admin ו־Viewer נשמרות ב־Supabase.</p>
         <form className="admin-form" onSubmit={signInWithPassword}>
           <label>
             מייל
@@ -847,7 +880,7 @@ function LoginScreen({ message }: { message: string | null }) {
             <input dir="ltr" type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="••••••••" />
           </label>
           <button type="submit" disabled={loading}>{loading ? 'מתחבר...' : 'כניסה עם סיסמה'}</button>
-          <button type="button" className="secondary-button" onClick={sendMagicLink} disabled={loading}>שלח Magic Link</button>
+          
         </form>
         {localMessage && <p className="admin-status" dir="auto">{localMessage}</p>}
       </section>
