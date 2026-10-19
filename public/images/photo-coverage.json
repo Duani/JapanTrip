@@ -1,0 +1,141 @@
+[
+  {
+    "id": "narita-airport",
+    "label": "נמל התעופה נריטה",
+    "state": "already installed",
+    "path": "/images/places/narita-airport.jpg"
+  },
+  {
+    "id": "tokyu-stay-shinjuku-place",
+    "label": "Tokyu Stay Shinjuku",
+    "state": "already installed",
+    "path": "/images/hotels/tokyu-stay-shinjuku.jpg"
+  },
+  {
+    "id": "shinjuku-evening",
+    "label": "אזור שינג׳וקו בערב",
+    "state": "already installed",
+    "path": "/images/places/shinjuku-evening.jpg"
+  },
+  {
+    "id": "meiji-jingu",
+    "label": "מקדש מייג׳י",
+    "state": "already installed",
+    "path": "/images/places/meiji-jingu.jpg"
+  },
+  {
+    "id": "harajuku-omotesando",
+    "label": "רחוב טאקשיטה / הרג׳וקו",
+    "state": "already installed",
+    "path": "/images/places/harajuku-omotesando.jpg"
+  },
+  {
+    "id": "age3-harajuku",
+    "label": "Age.3 Harajuku — נדרשת תמונת חזית מקורית/מורשית",
+    "state": "manual image present",
+    "path": "/images/places/age3-harajuku.jpg"
+  },
+  {
+    "id": "shibuya-crossing",
+    "label": "מעבר החציה בשיבויה",
+    "state": "already installed",
+    "path": "/images/places/shibuya-crossing.jpg"
+  },
+  {
+    "id": "tokyo-skytree",
+    "label": "Tokyo Skytree",
+    "state": "already installed",
+    "path": "/images/places/tokyo-skytree.jpg"
+  },
+  {
+    "id": "tsukiji-outer-market",
+    "label": "שוק צוקיג׳י",
+    "state": "already installed",
+    "path": "/images/places/tsukiji-outer-market.jpg"
+  },
+  {
+    "id": "ginza",
+    "label": "גינזה",
+    "state": "already installed",
+    "path": "/images/places/ginza.jpg"
+  },
+  {
+    "id": "asakusa-sensoji",
+    "label": "סנסו־ג׳י / אסקסה",
+    "state": "already installed",
+    "path": "/images/places/asakusa-sensoji.jpg"
+  },
+  {
+    "id": "akihabara",
+    "label": "אקיהברה",
+    "state": "already installed",
+    "path": "/images/places/akihabara.jpg"
+  },
+  {
+    "id": "shinjuku-shopping",
+    "label": "קניות בשינג׳וקו",
+    "state": "already installed",
+    "path": "/images/places/shinjuku-shopping.jpg"
+  },
+  {
+    "id": "shinjuku-gyoen",
+    "label": "גן שינג׳וקו גיואן",
+    "state": "already installed",
+    "path": "/images/places/shinjuku-gyoen.jpg"
+  },
+  {
+    "id": "kyoto-solaria-place",
+    "label": "מלון Solaria Kyoto",
+    "state": "already installed",
+    "path": "/images/hotels/solaria-kyoto.jpg"
+  },
+  {
+    "id": "pontocho-kamogawa",
+    "label": "סמטת פונטוצ׳ו בקיוטו",
+    "state": "already installed",
+    "path": "/images/places/pontocho-kamogawa.jpg"
+  },
+  {
+    "id": "fushimi-inari",
+    "label": "פושימי אינארי",
+    "state": "already installed",
+    "path": "/images/places/fushimi-inari.jpg"
+  },
+  {
+    "id": "kiyomizu-higashiyama",
+    "label": "קיומיזו־דרה",
+    "state": "already installed",
+    "path": "/images/places/kiyomizu-higashiyama.jpg"
+  },
+  {
+    "id": "gion-yasaka",
+    "label": "גיון / מקדש יאסאקה",
+    "state": "already installed",
+    "path": "/images/places/gion-yasaka.jpg"
+  },
+  {
+    "id": "nara-day",
+    "label": "נארה — פארק האיילים",
+    "state": "already installed",
+    "path": "/images/places/nara-day.jpg"
+  },
+  {
+    "id": "arashiyama",
+    "label": "יער הבמבוק ארשיאמה",
+    "state": "already installed",
+    "path": "/images/places/arashiyama.jpg"
+  },
+  {
+    "id": "ueno-ameyoko",
+    "label": "שוק אמאיוקו / אואנו",
+    "state": "already installed",
+    "path": "/images/places/ueno-ameyoko.jpg"
+  },
+  {
+    "id": "nohga-ueno-place",
+    "label": "NOHGA Hotel Ueno",
+    "state": "missing",
+    "path": "/images/hotels/nohga-ueno.jpg",
+    "error": "No suitable freely licensed JPEG with matching place name found"
+  }
+]

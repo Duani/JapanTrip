@@ -11,7 +11,9 @@
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:reset": "supabase db reset",
-    "images:fetch": "node scripts/fetch-commons-photos.mjs"
+    "images:fetch": "node scripts/fetch-commons-photos.mjs",
+    "images:preview": "node scripts/fetch-commons-photos.mjs --dry-run",
+    "images:report": "node scripts/photo-report.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "latest",

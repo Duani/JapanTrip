@@ -6,7 +6,7 @@ import { createChangeProposal, listChangeProposals, type ChangeProposalRow } fro
 import type { BookingItem, DayPlan, OpeningHours, Place, RouteLeg, StationAccess, TicketInfo, TripData, TripMemberRole } from './types';
 import { applyTripOperations, getPublishedTrip, publishTrip } from './lib/tripPublishing';
 import { skytreeProposal } from './lib/skytreeProposal';
-import { hotelAddresses, findStationNames, localPhotoByPlaceId } from './lib/travelEssentials';
+import { hotelAddresses, findStationNames, localPhotoByPlaceId, localPhotoByHotelId } from './lib/travelEssentials';
 import './styles.css';
 import './styles-v5.css';
 import './styles-v6.css';
@@ -154,7 +154,7 @@ function App() {
     <TripContext.Provider value={tripData}>
     <main className="app-shell" dir="rtl">
       {tripSyncError && <p className="admin-status">סנכרון מסלול: {tripSyncError}</p>}
-      <p className="trip-version-label">גרסת מסלול שפורסמה: v{tripVersion}</p>
+      <p className="trip-version-label">גרסת מסלול שפורסמה: v{tripVersion} · <a href="/images/photo-credits.html" target="_blank" rel="noreferrer">קרדיטים לתמונות</a></p>
       <AppHeader activeTab={tab} onChangeTab={setTab} user={user} membership={effectiveMembership} />
 
       {tab === 'today' && (
@@ -391,7 +391,7 @@ function PlaceImageBlock({ imageUrl, caption }: { imageUrl?: string; caption: st
     <figure className="place-photo placeholder-photo">
       <div aria-hidden="true">📷</div>
       <figcaption>{caption}</figcaption>
-      <small>תמונת זיהוי מקומית עדיין לא הותקנה. אפשר להוריד את החבילה עם npm run images:fetch.</small>
+      <small>לא נמצאה תמונה מקומית מאומתת. בדקו PHOTO_REPORT.md והוסיפו תמונה מורשית, אם צריך.</small>
     </figure>
   );
 }
@@ -511,6 +511,7 @@ function HotelAddressCard({ hotel, compact = false }: { hotel: TripData['hotels'
         </div>
         <a className="travel-link" href={hotel.googleMapsUrl} target="_blank" rel="noreferrer">נווט למלון ↗</a>
       </div>
+      {!compact && <PlaceImageBlock imageUrl={localPhotoByHotelId[hotel.id]} caption={`תמונת זיהוי — ${hotel.name}. ודאו התאמה לכניסה בפועל.`} />}
       <div className="hotel-address-grid">
         <section><span className="field-label">הצג לנהג / כתובת ביפנית</span><p className="large-japanese" lang="ja" dir="ltr">{detail.ja}</p><CopyButton value={detail.ja} label="העתק יפנית" /></section>
         <section><span className="field-label">English address</span><p dir="ltr" className="hotel-english">{detail.en}</p><CopyButton value={detail.en} label="Copy address" /></section>
@@ -523,7 +524,7 @@ function HotelAddressCard({ hotel, compact = false }: { hotel: TripData['hotels'
 
 function HotelsCenter() {
   const trip = useTripData();
-  return <section className="panel page-panel"><p className="eyebrow">Navigation essentials</p><h2>המלונות שלנו</h2><p className="summary">הצג לנהג מונית את הכתובת ביפנית, או העתק כתובת באנגלית לניווט. הכתובות אינן כוללות פרטי הזמנה.</p><div className="hotels-list">{trip.hotels.map((hotel) => <HotelAddressCard key={hotel.id} hotel={hotel} />)}</div></section>;
+  return <section className="panel page-panel"><p className="eyebrow">Navigation essentials</p><h2>המלונות שלנו</h2><p className="summary">הצג לנהג מונית את הכתובת ביפנית, או העתק כתובת באנגלית לניווט. הכתובות אינן כוללות פרטי הזמנה.</p><p className="photo-credit-link"><a href="/images/photo-credits.html" target="_blank" rel="noreferrer">מקורות ורישיונות תמונות ↗</a></p><div className="hotels-list">{trip.hotels.map((hotel) => <HotelAddressCard key={hotel.id} hotel={hotel} />)}</div></section>;
 }
 
 function BookingCenter() {

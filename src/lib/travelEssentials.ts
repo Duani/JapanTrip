@@ -76,11 +76,37 @@ export function findStationNames(text: string): Array<{ en: string; ja: string }
   return found;
 }
 
+// These paths are valid after `npm run images:fetch` installs the JPEGs.
+// Files absent on disk gracefully fall back to a placeholder in PlaceImageBlock.
+// Photos are public assets; NEVER put personal QR tickets or sensitive documents here.
 export const localPhotoByPlaceId: Record<string, string> = {
+  'narita-airport': '/images/places/narita-airport.jpg',
+  'tokyu-stay-shinjuku-place': '/images/hotels/tokyu-stay-shinjuku.jpg',
+  'shinjuku-evening': '/images/places/shinjuku-evening.jpg',
   'meiji-jingu': '/images/places/meiji-jingu.jpg',
   'harajuku-omotesando': '/images/places/harajuku-omotesando.jpg',
+  'age3-harajuku': '/images/places/age3-harajuku.jpg',
   'shibuya-crossing': '/images/places/shibuya-crossing.jpg',
+  'shibuya-sky': '/images/places/shibuya-sky.jpg',
   'tokyo-skytree': '/images/places/tokyo-skytree.jpg',
+  'tsukiji-outer-market': '/images/places/tsukiji-outer-market.jpg',
+  'ginza': '/images/places/ginza.jpg',
+  'asakusa-sensoji': '/images/places/asakusa-sensoji.jpg',
+  'akihabara': '/images/places/akihabara.jpg',
+  'shinjuku-shopping': '/images/places/shinjuku-shopping.jpg',
+  'shinjuku-gyoen': '/images/places/shinjuku-gyoen.jpg',
+  'kyoto-solaria-place': '/images/hotels/solaria-kyoto.jpg',
+  'pontocho-kamogawa': '/images/places/pontocho-kamogawa.jpg',
   'fushimi-inari': '/images/places/fushimi-inari.jpg',
-  'arashiyama': '/images/places/arashiyama.jpg'
+  'kiyomizu-higashiyama': '/images/places/kiyomizu-higashiyama.jpg',
+  'gion-yasaka': '/images/places/gion-yasaka.jpg',
+  'nara-day': '/images/places/nara-day.jpg',
+  'arashiyama': '/images/places/arashiyama.jpg',
+  'ueno-ameyoko': '/images/places/ueno-ameyoko.jpg'
+};
+
+export const localPhotoByHotelId: Record<string, string> = {
+  'tokyu-stay-shinjuku': '/images/hotels/tokyu-stay-shinjuku.jpg',
+  'solaria-kyoto': '/images/hotels/solaria-kyoto.jpg',
+  'nohga-ueno': '/images/hotels/nohga-ueno.jpg'
 };

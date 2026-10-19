@@ -72,3 +72,9 @@
   .tab-button { font-size: 10px; padding: 8px 1px; }
   .day-button { flex-basis: 132px; }
 }
+
+/* v6.1: clearly identifiable hotel photos, desktop and mobile */
+.hotel-address-card:not(.compact) .place-photo { margin: 12px 0; max-height: none; }
+.hotel-address-card:not(.compact) .place-photo img { width: 100%; height: min(36vw, 280px); object-fit: cover; border-radius: 16px; }
+.photo-credit-link a { color: #155c4b; text-decoration: underline; }
+@media(max-width:760px){ .hotel-address-card:not(.compact) .place-photo img { height: 220px; } }
