@@ -188,12 +188,12 @@ function AppHeader({ activeTab, onChangeTab, user, membership }: { activeTab: Ta
           {tripData.trip.travelers.map((t) => t.displayName).join(' · ')}
         </p>
       </div>
+      <AuthBadge user={user} membership={membership} />
       <div className="hero-status-grid">
         <Metric label="ימים" value={String(tripData.days.length)} />
         <Metric label="הזמנות לבדיקה" value={String(urgentBookings)} tone="warning" />
         <Metric label="לילות" value="Tokyo · Kyoto · Tokyo" dir="ltr" />
       </div>
-      <AuthBadge user={user} membership={membership} />
       <nav className="top-tabs" aria-label="ניווט ראשי">
         <TabButton tab="today" activeTab={activeTab} onChangeTab={onChangeTab}>היום במסלול</TabButton>
         <TabButton tab="itinerary" activeTab={activeTab} onChangeTab={onChangeTab}>כל הימים</TabButton>

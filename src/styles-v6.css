@@ -78,3 +78,37 @@
 .hotel-address-card:not(.compact) .place-photo img { width: 100%; height: min(36vw, 280px); object-fit: cover; border-radius: 16px; }
 .photo-credit-link a { color: #155c4b; text-decoration: underline; }
 @media(max-width:760px){ .hotel-address-card:not(.compact) .place-photo img { height: 220px; } }
+
+/* Mobile account header and visible logout button */
+@media (max-width: 760px) {
+  .auth-badge {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin: 0;
+    padding: 12px;
+  }
+
+  .auth-badge > div {
+    min-width: 0;
+  }
+
+  .auth-badge small {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    font-size: 11px;
+  }
+
+  .auth-badge button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    min-width: 76px;
+    padding: 10px 14px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}
