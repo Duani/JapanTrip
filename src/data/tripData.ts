@@ -635,27 +635,108 @@ export const tripData: TripData = {
       images: imageSlot('גיון ו-Yasaka Shrine בערב'),
       tags: ['kyoto', 'culture']
     },
-    {
-      id: 'nara-day',
-      name: 'Nara Day Trip',
-      nameHe: 'נארה: פארק, איילים וגנים',
-      category: 'experience',
-      city: 'Nara',
-      googleMapsUrl: mapsSearch('Nara Park Todai-ji Isuien Garden Yoshikien Garden'),
-      shortDescription: 'טיול יום רגוע מקיוטו: איילים, Todai-ji, Isuien ו-Yoshikien.',
-      whatToDo: ['Nara Park והאיילים.', 'Todai-ji והבודהה הגדול.', 'Isuien/Yoshikien אם יש כוח וזמן.'],
-      timeNeededMinutes: 420,
-      bestTimeOfDay: 'morning',
-      bookingRequired: false,
-      indoorOutdoor: 'mixed',
-      priority: 'must',
-      stationAccess: station('Kintetsu Nara Station', 'Main exits', 15, ['Kintetsu Nara Line'], 'נוח יותר לפארק מאשר JR Nara לרוב המסלול. אפשר ללכת או לקחת bus קצר ל-Todai-ji.'),
-      ticketInfo: { requirement: 'onsite', priceHint: 'פארק חופשי; Todai-ji/גנים בתשלום במקום לפי אתר רשמי.', notes: ['Yoshikien חינם לתיירים עם דרכון לפי אתר התיירות של נארה; לבדוק במקום.'] },
-      openingHours: hours('פארק פתוח; מקדש/גנים לפי שעות נפרדות.', 'https://www.visitnara.jp/'),
-      visualCues: ['איילים מסתובבים בפארק', 'שער גדול לכיוון Todai-ji', 'גנים שקטים קרובים לפארק'],
-      images: imageSlot('Nara Park, איילים ו-Todai-ji'),
-      tags: ['nara', 'day-trip']
-    },
+
+{
+  id: 'kurama-yuki-shrine',
+  name: 'Kurama & Yuki Shrine',
+  nameHe: 'קוראמה ומקדש יוקי',
+  category: 'experience',
+  city: 'Kyoto',
+  googleMapsUrl: mapsSearch('Yuki Shrine Kurama Kyoto'),
+  shortDescription: 'טיול הררי בצפון קיוטו, בין יערות ארז עתיקים, מקדש יוקי והאווירה המסורתית של Kurama.',
+  whatToDo: [
+    'לנסוע ברכבת Eizan עד Kurama Station.',
+    'לראות את פסל ה-Tengu הגדול ליד התחנה.',
+    'לעלות לכיוון Yuki Shrine ולראות את עץ הארז המקודש.',
+    'אם יש זמן וכוח, להמשיך לכיוון Kurama-dera.',
+    'לחזור לתחנת Kurama לפני המעבר ל-Kibune.'
+  ],
+  timeNeededMinutes: 120,
+  bestTimeOfDay: 'morning',
+  bookingRequired: false,
+  indoorOutdoor: 'outdoor',
+  priority: 'must',
+  stationAccess: station(
+    'Kurama Station (E17)',
+    'Main Exit',
+    15,
+    ['Eizan Railway - Kurama Line'],
+    'מ-Demachiyanagi (E01) לקחת רכבת לכיוון Kurama. בתחנה ללכת צפונה לכיוון Kurama-dera ומשם ל-Yuki Shrine. הדרך כוללת עלייה ומדרגות.'
+  ),
+  ticketInfo: {
+    requirement: 'onsite',
+    priceHint: 'הכניסה למקדש Yuki חופשית; הכניסה לאזור Kurama-dera עשויה להיות בתשלום.',
+    notes: [
+      'אין צורך בהזמנה מראש.',
+      'לשמור זמן להליכה בחזרה לתחנה.',
+      'להצטייד בנעלי הליכה נוחות.'
+    ]
+  },
+  openingHours: hours(
+    'מקדש Yuki פתוח לביקור; שעות שירותי המקדש עשויות להיות מוגבלות. לבדוק במקום.',
+    'https://www.yukijinjya.jp/'
+  ),
+  visualCues: [
+    'פסל Tengu אדום וגדול ליד תחנת Kurama',
+    'שערי מקדש בתוך יער הררי',
+    'עץ ארז עתיק וגבוה ליד Yuki Shrine'
+  ],
+  images: imageSlot(
+    'Yuki Shrine Kurama Kyoto sacred cedar and forest'
+  ),
+  tags: ['kyoto', 'kurama', 'nature', 'shrine', 'mountains']
+},
+{
+  id: 'kifune-shrine',
+  name: 'Kifune Shrine & Kibune Village',
+  nameHe: 'מקדש קיפונה והכפר קיבונה',
+  category: 'experience',
+  city: 'Kyoto',
+  googleMapsUrl: mapsSearch('Kifune Shrine Kyoto'),
+  shortDescription: 'מקדש הררי יפהפה בצפון קיוטו, המפורסם במדרגות האבן, הפנסים האדומים והנחל שעובר בכפר Kibune.',
+  whatToDo: [
+    'לנסוע ברכבת Eizan ל-Kibuneguchi Station (E16).',
+    'לקחת Kyoto Bus 33 לתחנת Kibune.',
+    'לעלות במדרגות האבן בין הפנסים האדומים.',
+    'לבקר במקדש Kifune Shrine.',
+    'לטייל לצד הנחל ולחפש מקום לארוחת צהריים.',
+    'לחזור באוטובוס 33 וברכבת לכיוון מרכז קיוטו.'
+  ],
+  timeNeededMinutes: 120,
+  bestTimeOfDay: 'afternoon',
+  bookingRequired: false,
+  indoorOutdoor: 'outdoor',
+  priority: 'must',
+  stationAccess: station(
+    'Kibuneguchi Station (E16)',
+    'Main Exit / Bus Stop',
+    5,
+    ['Eizan Railway - Kurama Line', 'Kyoto Bus 33'],
+    'לרדת ב-Kibuneguchi, לקחת אוטובוס 33 לכיוון Kibune, לרדת בתחנת Kibune וללכת כ-5 דקות למקדש.'
+  ),
+  ticketInfo: {
+    requirement: 'none',
+    priceHint: 'הכניסה למקדש חופשית. רכבת ואוטובוס בתשלום.',
+    notes: [
+      'אין צורך בהזמנה מראש.',
+      'שעות האוטובוסים משתנות; לבדוק את האוטובוס בחזרה.',
+      'יש מדרגות אבן בכניסה למקדש.'
+    ]
+  },
+  openingHours: hours(
+    'המקדש המרכזי פתוח 06:00–20:00 בין מאי לנובמבר; דלפק המזכרות פתוח 09:00–17:00.',
+    'https://kifunejinja.jp/en/info/'
+  ),
+  visualCues: [
+    'גרם מדרגות בין פנסים אדומים משני הצדדים',
+    'מקדש יפני בין עצים והרים',
+    'נחל הזורם לאורך הכפר Kibune'
+  ],
+  images: imageSlot(
+    'Kifune Shrine Kyoto red lantern stone staircase forest'
+  ),
+  tags: ['kyoto', 'kibune', 'nature', 'shrine', 'river']
+},
     {
       id: 'arashiyama',
       name: 'Arashiyama, Tenryu-ji & Bamboo Grove',
@@ -808,28 +889,146 @@ export const tripData: TripData = {
       offlineFallback: 'תחנות עוגן: Inari Station לפושימי; Gion-Shijo / Kiyomizu-Gojo לאזור גיון/קיומיזו.',
       adminStatus: 'needs-live-check'
     },
+
+{
+  id: 'kyoto-to-kurama-kifune',
+  date: '2026-10-30',
+  title: 'Kyoto → Demachiyanagi → Kurama',
+  fromLabel: 'Solaria Kyoto / Sanjo Station',
+  toLabel: 'Kurama Station / Yuki Shrine',
+  mode: 'train',
+  estimatedMinutes: 65,
+  bufferMinutes: 20,
+  ticketNeeded: false,
+  ticketNotes: [
+    'Keihan: Sanjo (KH40) → Demachiyanagi (KH42).',
+    'Eizan Railway: Demachiyanagi (E01) → Kurama (E17).',
+    'ניתן לשלם ב-Suica. אין צורך להזמין מראש.'
+  ],
+  steps: [
     {
-      id: 'kyoto-to-nara-day-trip',
-      date: '2026-10-30',
-      title: 'Kyoto → Nara → Kyoto',
-      fromLabel: 'Solaria Kyoto / Kyoto Station',
-      toLabel: 'Nara Park / Todai-ji',
-      mode: 'train',
-      estimatedMinutes: 90,
-      bufferMinutes: 30,
-      ticketNeeded: false,
-      ticketNotes: ['אפשר לנסוע JR Nara Line או Kintetsu. Kintetsu Nara נוח יותר לפארק.', 'אין חובה להזמין מראש; לבדוק route בזמן אמת.'],
-      steps: [
-        { order: 1, mode: 'train', from: 'Kyoto Station', to: 'Kintetsu Nara / JR Nara', line: 'Kintetsu Kyoto Line / JR Nara Line', estimatedMinutes: 45 },
-        { order: 2, mode: 'walk', from: 'Kintetsu Nara', to: 'Nara Park / Todai-ji', estimatedMinutes: 15 },
-        { order: 3, mode: 'walk', from: 'Todai-ji', to: 'Isuien / Yoshikien', estimatedMinutes: 10 },
-        { order: 4, mode: 'train', from: 'Nara', to: 'Kyoto', estimatedMinutes: 45 }
-      ],
-      googleMapsDirectionsUrl: mapsDir('Kyoto Station', 'Nara Park'),
-      instructionsShort: 'מקיוטו לנארה בבוקר, עדיף לרדת ב-Kintetsu Nara אם המסלול מאפשר. חזרה לקיוטו אחה״צ.',
-      offlineFallback: 'תחנת עוגן: Kintetsu Nara. משם ללכת לפארק/איילים/Todai-ji. לחזור לאותה תחנה.',
-      adminStatus: 'ready'
+      order: 1,
+      mode: 'walk',
+      from: 'Solaria Kyoto Premier',
+      to: 'Sanjo Station',
+      estimatedMinutes: 5
     },
+    {
+      order: 2,
+      mode: 'train',
+      from: 'Sanjo (KH40)',
+      to: 'Demachiyanagi (KH42)',
+      line: 'Keihan Oto Line',
+      estimatedMinutes: 5
+    },
+    {
+      order: 3,
+      mode: 'train',
+      from: 'Demachiyanagi (E01)',
+      to: 'Kurama (E17)',
+      line: 'Eizan Railway - Kurama Line',
+      estimatedMinutes: 30
+    },
+    {
+      order: 4,
+      mode: 'walk',
+      from: 'Kurama Station',
+      to: 'Yuki Shrine',
+      estimatedMinutes: 25
+    }
+  ],
+  googleMapsDirectionsUrl: mapsDir(
+    'Solaria Nishitetsu Hotel Kyoto Premier',
+    'Kurama Station Kyoto'
+  ),
+  instructionsShort:
+    'Sanjo רציפים 1–2 לכיוון Demachiyanagi. משם רכבת Eizan לכיוון Kurama.',
+  offlineFallback:
+    'תחנת עוגן: Kurama (E17). אין לרדת ב-Kibuneguchi לפני הביקור ב-Kurama.',
+  adminStatus: 'needs-live-check'
+},
+{
+  id: 'kurama-to-kifune',
+  date: '2026-10-30',
+  title: 'Kurama → Kibune → Kyoto',
+  fromLabel: 'Kurama / Yuki Shrine',
+  toLabel: 'Kifune Shrine / Return to Kyoto',
+  mode: 'train',
+  estimatedMinutes: 75,
+  bufferMinutes: 30,
+  ticketNeeded: false,
+  ticketNotes: [
+    'Kurama (E17) → Kibuneguchi (E16) ברכבת Eizan.',
+    'מ-Kibuneguchi אוטובוס Kyoto Bus 33 לתחנת Kibune.',
+    'מהתחנה הליכה של כ-5 דקות למקדש.',
+    'יש לוודא את זמני האוטובוס האחרון לפני היציאה.'
+  ],
+  steps: [
+    {
+      order: 1,
+      mode: 'walk',
+      from: 'Yuki Shrine',
+      to: 'Kurama Station',
+      estimatedMinutes: 25
+    },
+    {
+      order: 2,
+      mode: 'train',
+      from: 'Kurama (E17)',
+      to: 'Kibuneguchi (E16)',
+      line: 'Eizan Railway',
+      estimatedMinutes: 3
+    },
+    {
+      order: 3,
+      mode: 'bus',
+      from: 'Kibuneguchi Station',
+      to: 'Kibune Bus Stop',
+      line: 'Kyoto Bus 33',
+      estimatedMinutes: 7
+    },
+    {
+      order: 4,
+      mode: 'walk',
+      from: 'Kibune Bus Stop',
+      to: 'Kifune Shrine',
+      estimatedMinutes: 5
+    },
+    {
+      order: 5,
+      mode: 'bus',
+      from: 'Kibune',
+      to: 'Kibuneguchi Station',
+      line: 'Kyoto Bus 33',
+      estimatedMinutes: 7
+    },
+    {
+      order: 6,
+      mode: 'train',
+      from: 'Kibuneguchi (E16)',
+      to: 'Demachiyanagi (E01)',
+      line: 'Eizan Railway',
+      estimatedMinutes: 28
+    },
+    {
+      order: 7,
+      mode: 'train',
+      from: 'Demachiyanagi (KH42)',
+      to: 'Sanjo (KH40)',
+      line: 'Keihan Oto Line',
+      estimatedMinutes: 5
+    }
+  ],
+  googleMapsDirectionsUrl: mapsDir(
+    'Kurama Station Kyoto',
+    'Kifune Shrine Kyoto'
+  ),
+  instructionsShort:
+    'Kurama → Kibuneguchi ברכבת Eizan, אוטובוס 33 ל-Kibune והליכה למקדש. חזרה באותו מסלול.',
+  offlineFallback:
+    'אם אין אוטובוס מתאים, אפשר לחזור מ-Kibuneguchi לקיוטו ולוותר על Kifune. לא להסתמך על השביל ההררי.',
+  adminStatus: 'needs-live-check'
+},
     {
       id: 'kyoto-arashiyama-to-tokyo',
       date: '2026-10-31',
@@ -968,21 +1167,59 @@ export const tripData: TripData = {
       ],
       backupStrategy: 'אם יורד גשם/עייפות — לקצר את העלייה בפושימי או לוותר על סיור ערב.'
     },
+
+{
+  id: '2026-10-30',
+  date: '2026-10-30',
+  title: 'Kurama ו־Kifune: יערות ומקדשים בהרים',
+  city: 'Kyoto',
+  hotelId: 'solaria-kyoto',
+  summary: 'טיול טבע בצפון קיוטו במקום נארה. נבקר במקדש Yuki שבאזור Kurama, נמשיך לכפר Kibune ולמקדש Kifune ונחזור בערב למרכז קיוטו.',
+  mood: 'nature',
+  blocks: [
     {
-      id: '2026-10-30',
-      date: '2026-10-30',
-      title: 'נארה: איילים, Todai-ji וגנים',
-      city: 'Nara',
-      hotelId: 'solaria-kyoto',
-      summary: 'טיול יום מקיוטו לנארה. זו החלופה שנבחרה במקום ערב אוסאקה כדי לשמור על קצב רגוע יותר.',
-      mood: 'nature',
-      blocks: [
-        { id: 'nara-route', startTime: '09:00', type: 'transport', routeLegId: 'kyoto-to-nara-day-trip', title: 'רכבת לנארה', priority: 'must' },
-        { id: 'nara', startTime: '10:15', type: 'place', placeId: 'nara-day', title: 'Nara Park / Todai-ji / Gardens', priority: 'must' },
-        { id: 'kyoto-evening', startTime: '18:30', type: 'place', placeId: 'pontocho-kamogawa', title: 'ערב רגוע בקיוטו / Nishiki / Kawaramachi', priority: 'optional' }
-      ],
-      backupStrategy: 'אם מזג אוויר קשה — לקצר גנים ולהישאר בקיוטו לקניות/תה/קפה.'
+      id: 'kurama-route',
+      startTime: '08:30',
+      type: 'transport',
+      routeLegId: 'kyoto-to-kurama-kifune',
+      title: 'Sanjo → Demachiyanagi → Kurama',
+      priority: 'must'
     },
+    {
+      id: 'kurama-yuki',
+      startTime: '10:00',
+      type: 'place',
+      placeId: 'kurama-yuki-shrine',
+      title: 'Kurama ו־Yuki Shrine',
+      priority: 'must'
+    },
+    {
+      id: 'kifune-transfer',
+      startTime: '12:00',
+      type: 'transport',
+      routeLegId: 'kurama-to-kifune',
+      title: 'מעבר מ־Kurama ל־Kibune',
+      priority: 'must'
+    },
+    {
+      id: 'kifune-visit',
+      startTime: '13:00',
+      type: 'place',
+      placeId: 'kifune-shrine',
+      title: 'Kifune Shrine והכפר Kibune',
+      priority: 'must'
+    },
+    {
+      id: 'kyoto-evening',
+      startTime: '18:30',
+      type: 'place',
+      placeId: 'pontocho-kamogawa',
+      title: 'ערב רגוע בקיוטו / Pontocho',
+      priority: 'optional'
+    }
+  ],
+  backupStrategy: 'אם מזג האוויר אינו מתאים לטיול הררי, נשארים במרכז קיוטו. המעבר בין Kurama ל־Kibune יתבצע בתחבורה ציבורית, בלי להסתמך על שביל ההרים.'
+},
     {
       id: '2026-10-31',
       date: '2026-10-31',
